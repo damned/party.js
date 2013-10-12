@@ -1,17 +1,18 @@
 // events requirements
-// 0 - must: clearer than just function replacement vTICK
-// 1 - must: just a function call vTICK
-// 2 - must: be easy to use in tests
-// 3 - should: use function not string name of function vTICK
-// 4 - should: warn if event not listened to
-// 5 - should: set 'this' to be the receiving object (so event independent of source), change to api
-//             (to explicitly pass receiving obj so 'party' knows who to set 'this' to) vTICK
-// 6 - nice: specifies contract (i.e. what arguments passed)
-// 7 - nice: multiple listeners
-// 8 - nice: guard who (which obj) can raise events?
-// 9 - nice: remove raise object - just call directly on events
-// 10 - nice: include events object directly in api of host (remove 'raised_from')?
-// 11 - nice: allow a pure-function listener (not on an object)
+// 0  [vTICK] must: clearer than just function replacement
+// 1  [vTICK] must: just a function call
+// 2          must: be easy to use in tests
+// 3          must: give good error messages on misuse
+// 4  [vTICK] should: use function not string name of function
+// 5          should: warn if event not listened to
+// 6  [vTICK] should: set 'this' to be the receiving object (so event independent of source), change to api
+//                  (to explicitly pass receiving obj so 'party' knows who to set 'this' to)
+// 7          nice: specifies contract (i.e. what arguments passed)
+// 8          nice: multiple listeners
+// 9          nice: guard who (which obj) can raise events?
+// 10         nice: remove raise object - just call directly on events
+// 11         nice: include events object directly in api of host (remove 'raised_from')?
+// 12         nice: allow a pure-function listener (not on an object)
 
 var party = require('./party.js')
 
