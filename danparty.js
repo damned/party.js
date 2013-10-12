@@ -71,10 +71,13 @@ var dan = host();
 
 var grapevine = {
   spread_arrival: function(partygoer) {
-    console.log('guess what? ' + partygoer.name() + ' just arrived')
+    console.log('guess what? ' + partygoer.name() + ' just arrived ' + ' (i am ' + this + ')')
   },
   gossip: function(partygoer, why) {
-    console.log('oh, dear: ' + partygoer.name() + ' was not let in because: ' + why)
+    console.log('oh, dear: ' + partygoer.name() + ' was not let in because: ' + why + ' (i am ' + this + ')')
+  },
+  toString: function() {
+    return 'the grapevine';
   }
 }
 
