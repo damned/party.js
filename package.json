@@ -1,0 +1,24 @@
+{
+  "author": "damned",
+  "name": "party.js",
+  "description": "events <--> functions",
+  "version": "0.0.1",
+  "homepage": "http://github.com/damned/party.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/damned/party.js.git"
+  },
+  "main": "./run",
+  "scripts": {
+    "test": "./build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}

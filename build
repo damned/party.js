@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+var sys = require('util')
+var child = require('child_process')
+
+var to_stdout = function (error, out, err) {
+  sys.puts(out);
+  if (err !== null) {
+    sys.puts(err);
+  }
+  if (error !== null) {
+    sys.puts("error: " + error)
+  }
+}
+
+child.exec('./node_modules/.bin/mocha --reporter list test/party_test.js', to_stdout)
+
