@@ -4,7 +4,9 @@
 // 2 - must: be easy to use in tests
 // 3 - should: use function not string name of function vTICK
 // 4 - should: warn if event not listened to
-// 5 - should: keep same 'this' behaviour as direct call (if possible?)
+// 5 - should: leave 'this' as-is if function wired to event, but set 'this' to be
+//             - the receiving object (so event independent of source) if appropriate obj-related
+//             addition to api used (need to explicitly pass receiving obj so 'party' knows who to set this to)
 // 6 - nice: specifies contract (i.e. what arguments passed)
 // 7 - nice: multiple listeners
 // 8 - nice: guard who (which obj) can raise events?
@@ -71,7 +73,7 @@ var person = function(name, drunk) {
       return (drunk !== undefined)
     },
     on_told: function(message) {
-      console.log(name + ' hears: "' + message + '"')
+      console.log(name + ' hears: "' + message + '", this is: ' + this)
     },
     toString: function() {
       return 'person - (' + name + ')';
