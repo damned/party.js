@@ -4,19 +4,19 @@
 // 2 - must: be easy to use in tests
 // 3 - should: use function not string name of function vTICK
 // 4 - should: warn if event not listened to
-// 5 - should: leave 'this' as-is if function wired to event, but set 'this' to be
-//             - the receiving object (so event independent of source) if appropriate obj-related
-//             addition to api used (need to explicitly pass receiving obj so 'party' knows who to set this to)
+// 5 - should: set 'this' to be the receiving object (so event independent of source), change to api
+//             (to explicitly pass receiving obj so 'party' knows who to set 'this' to) vTICK
 // 6 - nice: specifies contract (i.e. what arguments passed)
 // 7 - nice: multiple listeners
 // 8 - nice: guard who (which obj) can raise events?
 // 9 - nice: remove raise object - just call directly on events
 // 10 - nice: include events object directly in api of host (remove 'raised_from')?
+// 11 - nice: allow a pure-function listener (not on an object)
 
 var party = require('./party.js')
 
 var host = function() {
-  var api = {};
+  var api;
   var partygoers = [];
   var events = party.events({
     on_arrival: function (person) {},
@@ -30,11 +30,7 @@ var host = function() {
   function let_in(person) {
     partygoers.push(person);
 
-    //old world
-    api.on_arrival(person);
-
-    //new world
-//    events.raise.on_arrival(person);
+    events.raise.on_arrival(person);
     tell(person, 'welcome, ' + person.name());
   }
 
@@ -44,21 +40,12 @@ var host = function() {
         let_in(person);
       }
       else {
-        //new world
-//        events.raise.on_ejection(person, person.name() + ' is drunk');
-
-        //new world
-        api.on_ejection(person, person.name() + ' is drunk');
+        events.raise.on_ejection(person, person.name() + ' is drunk');
       }
     },
     toString: function() {
       return 'the host';
     }
-
-    //old world
-    ,
-    on_arrival: function(){},
-    on_ejection: function(){}
   };
   events.raised_from(api);
   return  api;
@@ -100,12 +87,8 @@ var grapevine = {
 }
 
 // new world
-//dan.events.on_arrival = grapevine.spread_arrival;
-//dan.events.on_ejection = grapevine.gossip;
-
-// old world
-dan.on_arrival = grapevine.spread_arrival;
-dan.on_ejection = grapevine.gossip;
+dan.events.on_arrival.calls(grapevine).spread_arrival;
+dan.events.on_ejection.calls(grapevine).gossip;
 
 grapevine.spread_arrival({ name: function() { return 'calling directly from top level'; }})
 
