@@ -1,4 +1,4 @@
-var party = require('./party.js');
+var party = require('../party.js');
 
 var host = function() {
   var api = {};

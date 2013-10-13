@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-require('./danparty.js')
+require('./examples/danparty.js')
 

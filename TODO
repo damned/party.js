@@ -3,10 +3,10 @@
 
  0  [vTICK] must: clearer than just function replacement
  1  [vTICK] must: just a function call
- 2          must: be easy to use in tests - add a 'raised' counter on event
- 3          must: give good error messages on misuse
+ 2  [vTICK] must: be easy to use in tests - add a 'raised' counter on event
+ 3          should: give good error messages on misuse - downgraded from must cos i don't know how should be used :7/
  4  [vTICK] should: use function not string name of function
- 5          should: warn if event not listened to
+ 5          should: have a way of making obvious if event not listened to - maybe just call trace() to turn it on?
  6  [vTICK] should: set 'this' to be the receiving object (so event independent of source), change to api
                   (to explicitly pass receiving obj so 'party' knows who to set 'this' to)
  7          nice: specifies contract (i.e. what arguments passed)

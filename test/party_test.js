@@ -118,6 +118,26 @@ describe('party.js', function() {
       expect(receiver.called_with_arguments).to.eql(['too funky!']);
     });
 
+    describe('ease of testing objects that use it', function() {
+      it('should allow use of a raised counter to check whether object raised event or not', function() {
+        var object_under_test = {
+          method_under_test: function() {
+            this.required_event();
+          }
+        };
+
+        events({ required_event: function() {} }).wire_from(object_under_test);
+
+        expect(object_under_test.required_event.raised).to.equal(0);
+
+        // no wiring needed
+        object_under_test.method_under_test();
+
+        expect(object_under_test.required_event.raised).to.equal(1);
+      });
+
+      it('should (allow) check that a call / raise / receive has matching arguments to event declaration');
+    })
   });
 
   function receiver_spy() {

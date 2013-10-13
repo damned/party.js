@@ -38,10 +38,11 @@ party.events = function(events_spec, opts) {
     }
   }
 
-  function raise_event_fn(event_name) {
+  function raise_event_fn(event_name, callback) {
     return function() {
       log('raising event: ' + event_name);
-      recv_fns[event_name].apply(recv_objs[event_name], arguments);
+      recv_fns[event_name] && recv_fns[event_name].apply(recv_objs[event_name], arguments);
+      callback && callback();
     };
   }
 
@@ -54,7 +55,10 @@ party.events = function(events_spec, opts) {
   }
 
   var event = function(event_name) {
-    var event_raiser = raise_event_fn(event_name);
+    var event_raiser = raise_event_fn(event_name, function() {
+      event_raiser.raised += 1;
+    });
+    event_raiser.raised = 0;
     event_raiser.wire_to = function(recv_obj) {
       var receiver_type = typeof(recv_obj);
       if (receiver_type === 'function') {
