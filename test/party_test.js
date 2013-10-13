@@ -3,12 +3,12 @@ var party = require('../party.js');
 
 describe('party.js', function() {
   it('should allow host object to raise an event which calls another object', function() {
-    var events = party.events({
-      an_event: function() {
-      }
-    });
-    var sender = {};
-    events.raised_from(sender);
+    var sender = {
+      events: party.events({
+        an_event: function() {
+        }
+      })
+    };
 
     var receiver = receiver_spy();
 

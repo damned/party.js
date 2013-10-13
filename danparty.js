@@ -28,11 +28,11 @@ var host = function() {
         events.raise.on_ejection(person, person.name() + ' is drunk');
       }
     },
+    events: events,
     toString: function() {
       return 'the host';
     }
   };
-  events.raised_from(api);
   return  api;
 };
 
@@ -51,7 +51,7 @@ var person = function(name, drunk) {
       return 'person - (' + name + ')';
     }
   };
-}
+};
 
 var bob = person('bob'),
     sue = person('sue'),
@@ -69,7 +69,7 @@ var grapevine = {
   toString: function() {
     return 'the grapevine';
   }
-}
+};
 
 // new world
 dan.events.on_arrival.calls(grapevine).spread_arrival;

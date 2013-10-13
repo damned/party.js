@@ -80,19 +80,15 @@ exports.events = function(events_spec, opts) {
     recv_fns[event_name] = fn;
   }
 
-  var events_api = {};
-
-  events_api.raised_from = function(new_source) {
-    source = new_source;
-    source['events'] = events_api;
-  };
-  events_api.raise = {
+  var events_api = {
+    raise: {
+      toString: function() {
+        return 'party.events.raise object'
+      }
+    },
     toString: function() {
-      return 'party.events.raise object'
+      return 'party.events object'
     }
-  };
-  events_api.toString = function() {
-    return 'party.events object'
   };
   create_events();
   return events_api;
