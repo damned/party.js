@@ -1,38 +1,31 @@
 var party = require('./party.js');
 
 var host = function() {
-  var api;
-  var partygoers = [];
-  var events = party.events({
-    on_arrival: function (person) {},
-    on_ejection: function (person, reason) {}
-  }, { log: 'console'});
+  var api = {};
+  party.events({
+      on_arrival: function (person) {},
+      on_ejection: function (person, reason) {}
+    }, { log: 'console'}
+  ).wire_from(api);
 
   function tell(person, message) {
     person.on_told(message)
   }
 
   function let_in(person) {
-    partygoers.push(person);
-
-    events.raise.on_arrival(person);
+    api.on_arrival(person);
     tell(person, 'welcome, ' + person.name());
   }
 
-  api = {
-    greet: function (person) {
-      if (!person.is_drunk()) {
-        let_in(person);
-      }
-      else {
-        events.raise.on_ejection(person, person.name() + ' is drunk');
-      }
-    },
-    events: events,
-    toString: function() {
-      return 'the host';
+  api.greet = function (person) {
+    if (!person.is_drunk()) {
+      let_in(person);
+    }
+    else {
+      api.on_ejection(person, person.name() + ' is drunk');
     }
   };
+  api.toString = function() { return 'the host'; };
   return  api;
 };
 
@@ -63,8 +56,8 @@ var grapevine = {
   spread_arrival: function(partygoer) {
     console.log('guess what? ' + partygoer.name() + ' just arrived ' + ' (i am ' + this + ')')
   },
-  gossip: function(partygoer, why) {
-    console.log('oh, dear: ' + partygoer.name() + ' was not let in because: ' + why + ' (i am ' + this + ')')
+  gossip: function(person, reason) {
+    console.log('oh, dear: ' + person.name() + ' was not let in because: ' + reason + ' (i am ' + this + ')')
   },
   toString: function() {
     return 'the grapevine';
@@ -72,8 +65,8 @@ var grapevine = {
 };
 
 // new world
-dan.events.on_arrival.wire_to(grapevine).spread_arrival;
-dan.events.on_ejection.wire_to(grapevine).gossip;
+dan.on_arrival.wire_to(grapevine).spread_arrival;
+dan.on_ejection.wire_to(grapevine).gossip;
 
 grapevine.spread_arrival({
   name: function() {

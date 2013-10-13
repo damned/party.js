@@ -40,7 +40,7 @@ describe('party.js', function() {
   });
 
   describe('function event receiver', function() {
-    it('should allow function event receiver', function() {
+    it('should allow function as event receiver', function() {
       var party_events = events({
         an_event: function() { }
       });
@@ -56,7 +56,6 @@ describe('party.js', function() {
       expect(receiver_was_called).to.be.true;
     });
   });
-
 
   describe('event declaration', function() {
     it('should allow event declaration using cheaper? alternative syntax than dummy function', function() {
@@ -105,6 +104,18 @@ describe('party.js', function() {
       sender.events.an_event();
 
       expect(receiver.was_called).to.be.true;
+    });
+
+    it('should allow raising of events from arbitrary object (probably the sender)', function() {
+      var sender = {};
+
+      events({ on_amazement: function(why){} }).wire_from(sender);
+
+      sender.on_amazement.wire_to(receiver).target;
+
+      sender.on_amazement('too funky!');
+
+      expect(receiver.called_with_arguments).to.eql(['too funky!']);
     });
 
   });

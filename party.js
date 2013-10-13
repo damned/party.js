@@ -27,10 +27,11 @@ party.events = function(events_spec, opts) {
     event_names.forEach(function(event_name) {
       log('event: ' + event_name + ' has source w/ parameters: ' + events_spec.__source_of(event_name));
       log('about to define ' + event_name + ' on: ' + events_api.raise);
-      add_event(event_name);
+      events_api.raise[event_name] = raise_event_fn(event_name);
+      events_api[event_name] = event(event_name);
     });
-    for(var event in events_api) {
-      log('(events api / events) has property: ' + event)
+    for(var event_prop in events_api) {
+      log('(events api / events) has property: ' + event_prop)
     }
     for(var event_raiser in events_api.raise) {
       log('(events api / events).raise has property: ' + event_raiser)
@@ -42,11 +43,6 @@ party.events = function(events_spec, opts) {
       log('raising event: ' + event_name);
       recv_fns[event_name].apply(recv_objs[event_name], arguments);
     };
-  }
-
-  function add_event(event_name) {
-    events_api.raise[event_name] = raise_event_fn(event_name);
-    events_api[event_name] = event(event_name);
   }
 
   function add_receiver_proxy_method(receiver_proxy, recv_propname, event_name, recv_obj, property) {
@@ -94,11 +90,19 @@ party.events = function(events_spec, opts) {
     },
     toString: function() {
       return 'party.events object'
+    },
+    wire_from: function(source) {
+      event_names.forEach(function(event_name) {
+        log('about to define ' + event_name + ' on: ' + source);
+        source[event_name] = event(event_name);
+      });
+      return events_api;
     }
   };
   create_events();
   return events_api;
 };
+
 party.events.event = function() {
   var this_event = function() { };
   var event_fn_definition = 'function(' + Array.prototype.slice.call(arguments, 1).join(', ') + ') { }';
