@@ -39,7 +39,7 @@ describe('party.js', function() {
   });
 
   describe('making lighter', function() {
-    it('should not need "raised_from"', function() {
+    it('should allow definition of events property in sender initialisation', function() {
       var sender = {
         events: party.events({
           an_event: function() {
@@ -55,6 +55,22 @@ describe('party.js', function() {
 
       expect(receiver.was_called).to.be.true;
     });
+
+    it('should allow raising of events by calling function directly on events object', function() {
+      var sender = {
+        events: party.events({
+          an_event: function() {}
+        })
+      };
+      var receiver = receiver_spy();
+
+      sender.events.an_event.calls(receiver).target;
+
+      sender.events.an_event();
+
+      expect(receiver.was_called).to.be.true;
+    });
+
   });
 
 

@@ -35,11 +35,15 @@ exports.events = function(events_spec, opts) {
     }
   }
 
-  function add_event(event_name) {
-    events_api.raise[event_name] = function() {
+  function raise_event_fn(event_name) {
+    return function() {
       log('raising event: ' + event_name);
       recv_fns[event_name].apply(recv_objs[event_name], arguments);
     };
+  }
+
+  function add_event(event_name) {
+    events_api.raise[event_name] = raise_event_fn(event_name);
     events_api[event_name] = event(event_name);
   }
 
@@ -52,26 +56,26 @@ exports.events = function(events_spec, opts) {
   }
 
   var event = function(event_name) {
-    return {
-      calls: function(recv_obj) {
-        var receiver_type = typeof(recv_obj);
-        if (receiver_type === 'function') {
-          point_event_to_receiver(event_name, undefined, recv_obj.toString(), recv_obj);
-          return {};
-        }
-        else {
-          var receiver_proxy = {};
-          for(var propname in recv_obj) {
-            var property = recv_obj[propname];
-            log('receiver property: ' + propname);
-            if ((typeof(property) === 'function') && (propname != 'toString')) {
-              add_receiver_proxy_method(receiver_proxy, propname, event_name, recv_obj, property);
-            }
-          }
-          return receiver_proxy;
-        }
+    var event_raiser = raise_event_fn(event_name);
+    event_raiser.calls = function(recv_obj) {
+      var receiver_type = typeof(recv_obj);
+      if (receiver_type === 'function') {
+        point_event_to_receiver(event_name, undefined, recv_obj.toString(), recv_obj);
+        return {};
       }
-    }
+      else {
+        var receiver_proxy = {};
+        for(var propname in recv_obj) {
+          var property = recv_obj[propname];
+          log('receiver property: ' + propname);
+          if ((typeof(property) === 'function') && (propname != 'toString')) {
+            add_receiver_proxy_method(receiver_proxy, propname, event_name, recv_obj, property);
+          }
+        }
+        return receiver_proxy;
+      }
+    };
+    return event_raiser;
   };
 
   function point_event_to_receiver(event_name, receiver_obj, fn_name, fn) {

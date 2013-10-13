@@ -12,7 +12,8 @@
  7          nice: specifies contract (i.e. what arguments passed)
  8          nice: multiple listeners
  9          nice: guard who (which obj) can raise events?
- 10         nice: remove raise object - just call directly on events
- 11         nice: include events object directly in api of host (remove 'raised_from')?
- 12         nice: allow a pure-function listener (not on an object)
+ 10 [vTICK] nice: make raise object optional - just call directly on events
+ 11 [vTICK] nice: include events object directly in api of host (remove 'raised_from')?
+ 12 [vTICK] nice: allow a pure-function listener (not on an object)
  13         nice: allow briefer event function declaration: name: event([arg[s]])?
+ 14         idea: allow async raising of event?
