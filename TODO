@@ -15,3 +15,4 @@
  10         nice: remove raise object - just call directly on events
  11         nice: include events object directly in api of host (remove 'raised_from')?
  12         nice: allow a pure-function listener (not on an object)
+ 13         nice: allow briefer event function declaration: name: event([arg[s]])?
