@@ -137,7 +137,30 @@ describe('party.js', function() {
       });
 
       it('should (allow) check that a call / raise / receive has matching arguments to event declaration');
-    })
+    });
+
+    describe('multiple listener notification', function() {
+      it('should call event handlers on two separate receivers', function() {
+        var receiver1 = receiver_spy();
+        var receiver2 = receiver_spy();
+
+        var source = {};
+        events({ one_event: function() {} }).wire_from(source);
+
+        source.one_event.wire_to(receiver1).target;
+        source.one_event.wire_to(receiver2).target;
+
+        expect(source.one_event.raised).to.equal(0);
+        expect(receiver1.was_called).to.be.false;
+        expect(receiver2.was_called).to.be.false;
+
+        source.one_event();
+
+        expect(source.one_event.raised).to.equal(1);
+        expect(receiver1.was_called).to.be.true;
+        expect(receiver2.was_called).to.be.true;
+      })
+    });
   });
 
   function receiver_spy() {

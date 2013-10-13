@@ -10,7 +10,7 @@
  6  [vTICK] should: set 'this' to be the receiving object (so event independent of source), change to api
                   (to explicitly pass receiving obj so 'party' knows who to set 'this' to)
  7          nice: specifies contract (i.e. what arguments passed)
- 8          nice: multiple listeners
+ 8  [vTICK] nice: multiple listeners
  9          nice: guard who (which obj) can raise events?
  10 [vTICK] nice: make raise object optional - just call directly on events
  11 [vTICK] nice: include events object directly in api of host (remove 'raised_from')?

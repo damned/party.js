@@ -14,8 +14,7 @@ party.events = function(events_spec, opts) {
   var log = pick_log();
   var source;
   var event_names = [];
-  var recv_objs = {};
-  var recv_fns = {};
+  var receivers = {};
 
   function create_events() {
     for(var function_spec in events_spec) {
@@ -41,7 +40,7 @@ party.events = function(events_spec, opts) {
   function raise_event_fn(event_name, callback) {
     return function() {
       log('raising event: ' + event_name);
-      recv_fns[event_name] && recv_fns[event_name].apply(recv_objs[event_name], arguments);
+      notify_event(event_name, arguments);
       callback && callback();
     };
   }
@@ -80,10 +79,21 @@ party.events = function(events_spec, opts) {
     return event_raiser;
   };
 
+  function notify_event(event_name, event_args) {
+    var listeners = receivers[event_name];
+    if (listeners) {
+      listeners.forEach(function(listener) {
+        listener.fn.apply(listener.obj, event_args);
+      });
+    }
+  }
+
   function point_event_to_receiver(event_name, receiver_obj, fn_name, fn) {
     log('hooking up event: ' + event_name + ' to listener: ' + receiver_obj + '.' + fn_name);
-    recv_objs[event_name] = receiver_obj;
-    recv_fns[event_name] = fn;
+    if (!receivers[event_name]) {
+      receivers[event_name] = [];
+    }
+    receivers[event_name].push({ fn: fn, obj: receiver_obj });
   }
 
   var events_api = {
