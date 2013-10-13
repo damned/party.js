@@ -8,6 +8,7 @@ exports.events = function(events_spec, opts) {
     }
     return options.log || noop;
   }
+
   var log = pick_log();
   var source;
   var event_names = [];
@@ -15,32 +16,31 @@ exports.events = function(events_spec, opts) {
   var recv_fns = {};
 
   function create_events() {
-    for (var function_spec in events_spec) {
+    for(var function_spec in events_spec) {
       event_names.push(function_spec.toString());
     }
     events_spec['__source_of'] = function(name) {
       return this[name].toString();
     };
-
-    event_names.forEach(function (event_name) {
+    event_names.forEach(function(event_name) {
       log('event: ' + event_name + ' has source w/ parameters: ' + events_spec.__source_of(event_name));
-      log('about to define ' + event_name + ' on: ' + api.raise);
+      log('about to define ' + event_name + ' on: ' + events_api.raise);
       add_event(event_name);
     });
-    for (var event in api) {
+    for(var event in events_api) {
       log('(events api / events) has property: ' + event)
     }
-    for (var event_raiser in api.raise) {
+    for(var event_raiser in events_api.raise) {
       log('(events api / events).raise has property: ' + event_raiser)
     }
   }
 
   function add_event(event_name) {
-    api.raise[event_name] = function() {
+    events_api.raise[event_name] = function() {
       log('raising event: ' + event_name);
       recv_fns[event_name].apply(recv_objs[event_name], arguments);
     };
-    api[event_name] = event(event_name);
+    events_api[event_name] = event(event_name);
   }
 
   function add_receiver_proxy_method(receiver_proxy, recv_propname, event_name, recv_obj, property) {
@@ -56,12 +56,12 @@ exports.events = function(events_spec, opts) {
       calls: function(recv_obj) {
         var receiver_type = typeof(recv_obj);
         if (receiver_type === 'function') {
-          point_event_to_receiver(event_name, undefined, recv_obj.toString(), recv_obj)
+          point_event_to_receiver(event_name, undefined, recv_obj.toString(), recv_obj);
           return {};
         }
         else {
           var receiver_proxy = {};
-          for (var propname in recv_obj) {
+          for(var propname in recv_obj) {
             var property = recv_obj[propname];
             log('receiver property: ' + propname);
             if ((typeof(property) === 'function') && (propname != 'toString')) {
@@ -72,8 +72,7 @@ exports.events = function(events_spec, opts) {
         }
       }
     }
-  }
-
+  };
 
   function point_event_to_receiver(event_name, receiver_obj, fn_name, fn) {
     log('hooking up event: ' + event_name + ' to listener: ' + receiver_obj + '.' + fn_name);
@@ -81,21 +80,21 @@ exports.events = function(events_spec, opts) {
     recv_fns[event_name] = fn;
   }
 
-  var api = {};
+  var events_api = {};
 
-  api.raised_from = function(new_source) {
+  events_api.raised_from = function(new_source) {
     source = new_source;
-    source['events'] = api;
-    create_events();
+    source['events'] = events_api;
   };
-  api.raise = {
+  events_api.raise = {
     toString: function() {
       return 'party.events.raise object'
     }
   };
-  api.toString = function() {
+  events_api.toString = function() {
     return 'party.events object'
   };
-  return api;
-}
+  create_events();
+  return events_api;
+};
 
