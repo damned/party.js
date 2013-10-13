@@ -1,4 +1,6 @@
-exports.events = function(events_spec, opts) {
+var party = exports || party || ({});
+
+party.events = function(events_spec, opts) {
   var options = opts || {};
 
   function pick_log() {
@@ -96,5 +98,13 @@ exports.events = function(events_spec, opts) {
   };
   create_events();
   return events_api;
+};
+party.events.event = function() {
+  var this_event = function() { };
+  var event_fn_definition = 'function(' + Array.prototype.slice.call(arguments, 1).join(', ') + ') { }';
+  this_event.toString =  function() {
+     return event_fn_definition;
+  };
+  return this_event;
 };
 
