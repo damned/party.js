@@ -3,7 +3,7 @@
 
  0  [vTICK] must: clearer than just function replacement
  1  [vTICK] must: just a function call
- 2          must: be easy to use in tests
+ 2          must: be easy to use in tests - add a 'raised' counter on event
  3          must: give good error messages on misuse
  4  [vTICK] should: use function not string name of function
  5          should: warn if event not listened to
@@ -17,3 +17,6 @@
  12 [vTICK] nice: allow a pure-function listener (not on an object)
  13         nice: allow briefer event function declaration: name: event([arg[s]])?
  14         idea: allow async raising of event?
+ 15         nice: resurrect 'raised_from' as 'from' so can raise event calling directly: sender.the_event()
+ 16         nice: descriptive toString of events on events object
+ 17         should: allow 'unwire_from' and 'unwire'

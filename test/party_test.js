@@ -12,7 +12,7 @@ describe('party.js', function() {
 
     var receiver = receiver_spy();
 
-    sender.events.an_event.calls(receiver).target;
+    sender.events.an_event.wire_to(receiver).target;
 
     sender.events.raise.an_event();
 
@@ -28,7 +28,7 @@ describe('party.js', function() {
 
       var receiver_was_called = false;
 
-      events.an_event.calls(function() {
+      events.an_event.wire_to(function() {
         receiver_was_called = true;
       });
 
@@ -49,7 +49,7 @@ describe('party.js', function() {
 
       var receiver = receiver_spy();
 
-      sender.events.an_event.calls(receiver).target;
+      sender.events.an_event.wire_to(receiver).target;
 
       sender.events.raise.an_event();
 
@@ -64,7 +64,7 @@ describe('party.js', function() {
       };
       var receiver = receiver_spy();
 
-      sender.events.an_event.calls(receiver).target;
+      sender.events.an_event.wire_to(receiver).target;
 
       sender.events.an_event();
 

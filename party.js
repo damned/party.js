@@ -57,7 +57,7 @@ exports.events = function(events_spec, opts) {
 
   var event = function(event_name) {
     var event_raiser = raise_event_fn(event_name);
-    event_raiser.calls = function(recv_obj) {
+    event_raiser.wire_to = function(recv_obj) {
       var receiver_type = typeof(recv_obj);
       if (receiver_type === 'function') {
         point_event_to_receiver(event_name, undefined, recv_obj.toString(), recv_obj);

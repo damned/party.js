@@ -1,4 +1,4 @@
-var party = require('./party.js')
+var party = require('./party.js');
 
 var host = function() {
   var api;
@@ -72,10 +72,14 @@ var grapevine = {
 };
 
 // new world
-dan.events.on_arrival.calls(grapevine).spread_arrival;
-dan.events.on_ejection.calls(grapevine).gossip;
+dan.events.on_arrival.wire_to(grapevine).spread_arrival;
+dan.events.on_ejection.wire_to(grapevine).gossip;
 
-grapevine.spread_arrival({ name: function() { return 'calling directly from top level'; }})
+grapevine.spread_arrival({
+  name: function() {
+    return 'calling directly from top level';
+  }
+});
 
 dan.greet(bob);
 dan.greet(sue);
