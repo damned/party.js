@@ -1,70 +1,92 @@
-exports.events = function(events_spec) {
+exports.events = function(events_spec, opts) {
+  var options = opts || {};
+
+  function pick_log() {
+    function noop() { }
+    if (options.log == 'console') {
+      return (console === undefined) ? noop : console.log;
+    }
+    return options.log || noop;
+  }
+  var log = pick_log();
   var source;
   var event_names = [];
-  var receivers = {};
-  var receiver_methods = {};
+  var recv_objs = {};
+  var recv_fns = {};
 
-  function point_event_to_receiver(event_name, receiver, method_name, method) {
-    console.log('hooking up event: ' + event_name + ' to listener: ' + receiver + '.' + method_name);
-    receivers[event_name] = receiver;
-    receiver_methods[event_name] = method;
+  function create_events() {
+    for (var function_spec in events_spec) {
+      event_names.push(function_spec.toString());
+    }
+    events_spec['__source_of'] = function(name) {
+      return this[name].toString();
+    };
+
+    event_names.forEach(function (event_name) {
+      log('event: ' + event_name + ' has source w/ parameters: ' + events_spec.__source_of(event_name));
+      log('about to define ' + event_name + ' on: ' + api.raise);
+      add_event(event_name);
+    });
+    for (var event in api) {
+      log('(events api / events) has property: ' + event)
+    }
+    for (var event_raiser in api.raise) {
+      log('(events api / events).raise has property: ' + event_raiser)
+    }
   }
 
-  function add_receiver_proxy_method(receiver_proxy, receiver_propname, event_name, receiver, property) {
-    Object.defineProperty(receiver_proxy, receiver_propname, {
-      get: function () {
-        point_event_to_receiver(event_name, receiver, receiver_propname, property);
+  function add_event(event_name) {
+    api.raise[event_name] = function() {
+      log('raising event: ' + event_name);
+      recv_fns[event_name].apply(recv_objs[event_name], arguments);
+    };
+    api[event_name] = event(event_name);
+  }
+
+  function add_receiver_proxy_method(receiver_proxy, recv_propname, event_name, recv_obj, property) {
+    Object.defineProperty(receiver_proxy, recv_propname, {
+      get: function() {
+        point_event_to_receiver(event_name, recv_obj, recv_propname, property);
       }
     });
   }
 
   var event = function(event_name) {
     return {
-      calls: function(receiver) {
-        var receiver_proxy = {};
-        for (var receiver_propname in receiver) {
-          var property = receiver[receiver_propname];
-          console.log('receiver property: ' + receiver_propname);
-          if ((typeof(property) === 'function') && (receiver_propname != 'toString')) {
-            add_receiver_proxy_method(receiver_proxy, receiver_propname, event_name, receiver, property);
-          }
+      calls: function(recv_obj) {
+        var receiver_type = typeof(recv_obj);
+        if (receiver_type === 'function') {
+          point_event_to_receiver(event_name, undefined, recv_obj.toString(), recv_obj)
+          return {};
         }
-        return receiver_proxy;
+        else {
+          var receiver_proxy = {};
+          for (var propname in recv_obj) {
+            var property = recv_obj[propname];
+            log('receiver property: ' + propname);
+            if ((typeof(property) === 'function') && (propname != 'toString')) {
+              add_receiver_proxy_method(receiver_proxy, propname, event_name, recv_obj, property);
+            }
+          }
+          return receiver_proxy;
+        }
       }
     }
   }
 
 
-  function add_event(event_name) {
-    api.raise[event_name] = function() {
-      console.log('raising event: ' + event_name);
-      receiver_methods[event_name].apply(receivers[event_name], arguments);
-    }
-    api[event_name] = event(event_name);
+  function point_event_to_receiver(event_name, receiver_obj, fn_name, fn) {
+    log('hooking up event: ' + event_name + ' to listener: ' + receiver_obj + '.' + fn_name);
+    recv_objs[event_name] = receiver_obj;
+    recv_fns[event_name] = fn;
   }
 
   var api = {};
+
   api.raised_from = function(new_source) {
     source = new_source;
     source['events'] = api;
-    for (var function_spec in events_spec) {
-      event_names.push(function_spec.toString());
-    }
-    events_spec['__source_of'] = function(name) {
-      return (typeof(this[name]) == 'function') ? this[name].toString() : 'oops, not a function: ' + name;
-    }
-
-    event_names.forEach(function(event_name) {
-      console.log('event: ' + event_name + ' has parameters: ' + events_spec.__source_of(event_name));
-      console.log('about to define ' + event_name + ' on: ' + api.raise);
-      add_event(event_name);
-    });
-    for (var event in api) {
-      console.log('(events api / events) has property: ' + event)
-    }
-    for (var event in api.raise) {
-      console.log('(events api / events).raise has property: ' + event)
-    }
+    create_events();
   };
   api.raise = {
     toString: function() {

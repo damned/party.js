@@ -6,7 +6,7 @@ var host = function() {
   var events = party.events({
     on_arrival: function (person) {},
     on_ejection: function (person, reason) {}
-  });
+  }, { log: 'console'});
 
   function tell(person, message) {
     person.on_told(message)
@@ -34,7 +34,7 @@ var host = function() {
   };
   events.raised_from(api);
   return  api;
-}
+};
 
 var person = function(name, drunk) {
   return {
