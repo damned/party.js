@@ -1,4 +1,10 @@
-var party = exports || party || ({});
+var party;
+if (typeof exports !== 'undefined') {
+  party = exports;
+}
+else {
+  party = party || ({});
+}
 
 party.events = function(events_spec, opts) {
   var options = opts || {};
